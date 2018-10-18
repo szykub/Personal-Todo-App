@@ -1,6 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Icon } from 'react-native-elements';
+
+import { asyncStorageOperation } from '../functions/AsyncStorageOperations';
 
 export class TodoList extends React.Component{
     constructor(props){
@@ -12,25 +14,43 @@ export class TodoList extends React.Component{
         }
     }
 
-    handlePress = () => {
+    deleteFromStorage = () => {
+        asyncStorageOperation("remove", 0, this.props.id);
+    }
+
+    handleDelete = () => {
         if(this.state.done){
+            this.deleteFromStorage();
             this.setState({
                 delete: true
-            })
+            });            
+        }else{
+            this.setState({
+                done: true
+            });
         }
+    }
 
-        this.setState({
-            done: true
-        });
+    handleElementView = () => {
+        this.props.navigation.navigate("Details", {
+            title: this.props.title,
+            description: this.props.description,
+            added: this.props.added,
+            expires: this.props.expires,
+            priority: this.props.priority,
+        })
     }
 
     render(){
         if(this.state.delete) return null
         else{
             return(
-                <TouchableOpacity style={[styles.container, {backgroundColor: this.state.done ? '#d7d7d7' : '#fff'}]}>
+                <TouchableOpacity 
+                    style={[styles.container, {backgroundColor: this.state.done ? '#d7d7d7' : '#fff'}]}
+                    onPress={this.handleElementView}
+                >
                     <TouchableOpacity
-                        onPress={this.handlePress}
+                        onPress={this.handleDelete}
                     >
                         <Icon 
                             containerStyle={[styles.icon, {backgroundColor: this.state.done ? 'red' : 'lightgreen'}]}
@@ -42,6 +62,12 @@ export class TodoList extends React.Component{
                     <Text style={styles.title}>{this.props.title}</Text>
                     <View style={styles.dateContainer}>
                         <Text style={styles.dateText}>Added: {this.props.added}</Text>
+                        {this.props.priority ? 
+                        <Icon 
+                            size={25}
+                            name="priority-high"
+                            iconStyle={styles.priorityIcon}
+                        /> : null}
                         <Text style={styles.dateTextDeadline}>Deadline: {this.props.expires}</Text>
                     </View>
                 </TouchableOpacity>
@@ -52,7 +78,7 @@ export class TodoList extends React.Component{
 
 const styles = StyleSheet.create({
     container:{
-        flex: 0.15,
+        height:90,
         justifyContent: 'space-between',
         alignItems: 'center',
         flexDirection: 'row', 
@@ -66,16 +92,19 @@ const styles = StyleSheet.create({
     title:{
         color: '#27f',
         fontSize: 14,
-        flex: 0.45,
+
     },
     icon:{
         backgroundColor: 'lightgreen',
         borderRadius: 100,
         padding: 5,
     },
+    priorityIcon:{
+        color: 'red'
+    },
     dateContainer:{
         flex: 0.45,
-        height: '80%',
+        height: "80%",
         justifyContent: 'space-around',
         alignItems:'flex-end',
         flexDirection: 'column',
@@ -86,6 +115,6 @@ const styles = StyleSheet.create({
     },
     dateTextDeadline:{
         fontSize: 12,
-        color: 'red'
+        color: 'tomato'
     }
 })

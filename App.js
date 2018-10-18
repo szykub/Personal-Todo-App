@@ -1,13 +1,15 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, AsyncStorage } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, FlatList  } from 'react-native';
 import { Icon } from 'react-native-elements';
-import { createStackNavigator } from 'react-navigation';
+import { createStackNavigator, NavigationEvents } from 'react-navigation';
 
-import { Header } from './assets/Header';
-import { TodoList } from './assets/TodoList';
-import { DetailsScreen } from './assets/Details';
-import { AddScreen } from './assets/Add';
+import { Header } from './assets/components/Header';
+import { TodoList } from './assets/components/TodoList';
+import { DetailsScreen } from './assets/components/Details';
+import { AddScreen } from './assets/components/Add';
 
+import { asyncStorageOperation } from './assets/functions/AsyncStorageOperations';
+ 
 export class MainScreen extends React.Component {
     static navigationOptions = {
         header: null,
@@ -20,88 +22,77 @@ export class MainScreen extends React.Component {
             todoArray:[],
         }
     }   
-    
-    componentDidMount = () => {
-        AsyncStorage.getItem('TodoList').then((array) => {
-            if(array !== null){
-                array = JSON.parse(array);
-                if(array === this.state.todoArray){
-                    return null
-                }else{                
-                    this.setState({
-                        todoArray: array
-                    })
-                }
-            }else{
-                this.setState({
-                    todoArray: new Array()
-                })
-            }
-        })
+
+    componentDidMount(){
+        this.getListAsync()
     }
 
-    getList = async () => {
-        try {
-            let array = await AsyncStorage.getItem('TodoList');            
-            if(array !== null){
-                array = JSON.parse(array);
-                AsyncStorage.removeItem("TodoList")
-                this.setState({
-                    todoArray: array,
-                })
-            }
-        } catch (error) {
-            console.log(error);
-        }
+    getListAsync = () => {
+        asyncStorageOperation("read")
+        .then(array => {
+            this.setState({
+                todoArray: array
+            })
+        });        
     }
 
-    addTodo = () => {
+    handleAddTodoPress = () => {
         this.props.navigation.navigate('Add', {
-            onNavigateBack: this.getList
-          });
-    }
-
-    addTodoButton = () => {
-        return(
-            <View style={styles.addContainer}>
-                <TouchableOpacity 
-                    style={styles.addButton}
-                    onPress={this.addTodo}
-                >
-                    <Icon 
-                        containerStyle={styles.addButton}
-                        size={45}
-                        color='#fff'                            
-                        name='add'                            
-                    />
-                </TouchableOpacity>
-            </View>
-        )
-    }
+            onNavigateBack: this.getListAsync
+        });
+    }  
 
     render() {
         return (
             <View style={styles.container}>
-                <Header />                
-                {
-                    this.state.todoArray.map(item => {
-                        return <TodoList title={item.title} added={item.created} expires={item.expires} key={item.key}/>
-                    })
-                }
-                <this.addTodoButton />
-            </View>
+                <NavigationEvents 
+                    onDidFocus={() => this.getListAsync}
+                />
+                <Header />
+                <FlatList    
+                    style={styles.list}
+                    data={this.state.todoArray}
+                    renderItem={({ item }) => (
+                        <TodoList 
+                            title={item.title} 
+                            description={item.description} 
+                            added={item.created} expires={item.expires} 
+                            id={item.key} 
+                            priority={item.highPriority} 
+                            navigation={this.props.navigation}
+                        />
+                    )}
+                    keyExtractor = { (item, index) => index.toString() }
+                />
+                <View style={styles.addContainer}>
+                    <TouchableOpacity 
+                        style={styles.addButton}
+                        onPress={this.handleAddTodoPress}
+                    >
+                        <Icon 
+                            containerStyle={styles.addButton}
+                            size={45}
+                            color='#fff'                            
+                            name='add'                            
+                        />
+                    </TouchableOpacity>
+                </View>
+            </View >
         );
     }
 }
 
-
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        display: 'flex',
+        minHeight:"100%",
         backgroundColor: '#fff',
     },
+    list:{
+        height: "60%"
+    },
     addContainer: {
-        flex: 0.15,
+        height: "20%",
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -111,7 +102,6 @@ const styles = StyleSheet.create({
         padding: 4,
     },
 });
-
 
 export default createStackNavigator(
     {

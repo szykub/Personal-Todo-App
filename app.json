@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "todo-app",
-    "description": "This project is really great.",
-    "slug": "todo-app",
+    "name": "Personal Todo App",
+    "icon": "./icon.png",
+    "description": "Simple Todo app without milions of functionalities to make it clear and simple.",
+    "slug": "personal-todo-app",
     "privacy": "public",
     "sdkVersion": "30.0.0",
     "platforms": ["ios", "android"],
@@ -11,6 +12,9 @@
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
+    },
+    "android": {
+      "package": "com.todoapp.todoapp"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

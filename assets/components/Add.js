@@ -3,8 +3,9 @@ import { StyleSheet, View, KeyboardAvoidingView, TextInput, Text, TouchableOpaci
 import { Icon, CheckBox } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
-export class AddScreen extends React.Component{
+import { asyncStorageOperation, faliureCallback } from '../functions/AsyncStorageOperations';
 
+export class AddScreen extends React.Component{
     static navigationOptions = {
         title: "Add todo list item",
         headerStyle:{
@@ -19,9 +20,8 @@ export class AddScreen extends React.Component{
         this.state = {
             title: '',
             description: '',
-            date: '',
+            date: "No deadline",
             highPriority: false,
-
             isDateTimePickerVisible: false,
         }
     }
@@ -66,46 +66,27 @@ export class AddScreen extends React.Component{
         }))
     }
 
-
-    handleAdd = async () => {
+    handleAdd = () => {
         let date = new Date().toLocaleDateString();
         let dateArray = date.split('/');
         let newDate = `20${dateArray[2]}-${dateArray[0]}-${dateArray[1]}`
         
         let newItem = {
+            key: Date.now(),
+
             title: this.state.title,
             description: this.state.description,
-            highPriority: this.setState.highPriority,
+            highPriority: this.state.highPriority,
             created: newDate,
-            expires: this.state.date,
-            key: Date.now(),
+            expires: this.state.date,            
         }
-        try {
-            let array = await AsyncStorage.getItem("TodoList");
-            if(array !== null){
-              array = JSON.parse(array);
-              array.push(newItem);
-              array = JSON.stringify(array);
-              AsyncStorage.removeItem("TodoList");
-              try {
-                await AsyncStorage.setItem("TodoList", array);
-              } catch (error) {
-                  console.log(error.message)
-              }
-            }else{
-                let firstSave = [newItem];
-                firstSave = JSON.stringify(firstSave);
-                try {
-                    await AsyncStorage.setItem("TodoList", firstSave);
-                } catch (error) {
-                    console.log(error.message)
-                }
-            }
+
+        asyncStorageOperation("add", newItem)
+        .then(()=>{
             this.props.navigation.state.params.onNavigateBack();
             this.props.navigation.goBack();
-        } catch (error) {
-            Alert.alert("Error", "Error occured while adding an item")
-        }
+        })
+        .catch(faliureCallback)
     }
 
     render(){
@@ -118,7 +99,7 @@ export class AddScreen extends React.Component{
                         maxLength={50}
                         onChangeText={this.handleTitle}
                         value={this.state.title}
-                        placeholder={'Do laundry'}
+                        placeholder={'Item title'}
                         underlineColorAndroid = "transparent"
                     />
                 </View>
@@ -131,12 +112,12 @@ export class AddScreen extends React.Component{
                         maxLength={200}
                         onChangeText={this.handleDescription}
                         value={this.state.description}
-                        placeholder={'Description'}
+                        placeholder={'Item description'}
                         underlineColorAndroid = "transparent"
                     />
                 </View>
                 <View style={styles.nestedContainer}>
-                    <Text style={styles.text}>When it have to be done?</Text>
+                    <Text style={styles.text}>Deadline date</Text>
                     <TouchableOpacity
                         onPress={this.showDateTimePicker}
                     >
