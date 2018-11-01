@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, ImageBackground } from 'react-native';
 
 export class DetailsScreen extends React.Component{
     static navigationOptions = {
@@ -23,7 +23,18 @@ export class DetailsScreen extends React.Component{
         }
 
         return(
-            <View style={styles.container}>
+            <ImageBackground source={require("../images/background.jpg")} style={styles.container} opacity={0.6}>
+                <Text style={styles.added}>Added: {navigationProps.added}</Text>
+                <Text style={styles.days}>You have ? days left</Text>
+                <View style={styles.roundContainer}>
+                    <Text style={styles.title}>{navigationProps.title}</Text>
+                </View>
+                <View style={styles.divider}></View>
+                <Text style={styles.descriptionText}>Description</Text>
+                <Text style={styles.description}>{navigationProps.description}</Text>
+                <Text style={styles.deadline}>Deadline: {navigationProps.expires}</Text>
+            {
+            /*
                 <View style={styles.nestedContainer}>
                     <Text style={styles.text}>Title</Text>
                     <Text>{navigationProps.title}</Text>
@@ -45,12 +56,70 @@ export class DetailsScreen extends React.Component{
                     <Text style={styles.text}>Priority</Text>
                     <Text>This item has {navigationProps.priority === true ? "high" : "normal"} priority</Text>
                 </View>
-            </View>
+            */
+            }
+            </ImageBackground >
         )
     }
 }
 
 const styles = StyleSheet.create({
+    container:{
+        flex: 1,
+    },
+    added:{
+        textAlign: 'right',
+        color: '#28f',
+        fontSize: 14,
+        paddingTop: 20,
+        paddingRight: 20,
+    },
+    days:{
+        color: 'tomato',
+        fontSize: 18,
+        textAlign: 'center',
+        padding: 35,
+    },
+    roundContainer:{
+        backgroundColor: 'darkblue',
+        borderRadius: 100,
+        width: 200,
+        height: 200,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 15,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+    },
+    title:{
+        color: '#fff',
+        fontSize: 16,
+        textAlign: 'center',
+    },
+    divider:{
+        width: 1,
+        height: 40,
+        backgroundColor: 'darkblue',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+    },
+    descriptionText:{
+        color: '#28f',
+        textAlign: 'center',
+        fontSize: 18,
+    },
+    description:{
+        fontSize: 14,
+        padding: 15,
+    },
+    deadline:{
+        color: 'tomato',
+        paddingBottom: 20,
+        paddingRight: 20,
+        textAlign: 'right',
+    }
+    /*
     container:{
         flex:1,
         justifyContent: 'space-around',
@@ -67,4 +136,5 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 10,
     },
+    */
 })

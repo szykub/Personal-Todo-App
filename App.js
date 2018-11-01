@@ -8,7 +8,7 @@ import { TodoList } from './assets/components/TodoList';
 import { DetailsScreen } from './assets/components/Details';
 import { AddScreen } from './assets/components/Add';
 
-import { asyncStorageOperation } from './assets/functions/AsyncStorageOperations';
+import { asyncStorageOperation, failureCallback } from './assets/functions/AsyncStorageOperations';
  
 export class MainScreen extends React.Component {
     static navigationOptions = {
@@ -32,23 +32,34 @@ export class MainScreen extends React.Component {
         .then(array => {
             this.setState({
                 todoArray: array
-            })
-        });        
+            });            
+        })
+        .catch(failureCallback)        
     }
 
     handleAddTodoPress = () => {
-        this.props.navigation.navigate('Add', {
-            onNavigateBack: this.getListAsync
-        });
+        this.props.navigation.navigate('Add');
     }  
 
     render() {
         return (
             <View style={styles.container}>
                 <NavigationEvents 
-                    onDidFocus={() => this.getListAsync}
+                    onWillFocus={() => {this.getListAsync();}}
                 />
-                <Header />
+                <Header>
+                    <TouchableOpacity
+                        onPress={this.handleAddTodoPress}
+                        style={styles.addButton}
+                    >
+                        <Icon 
+                            containerStyle={styles.addButton}
+                            size={25}
+                            color='#fff'                            
+                            name='add'                            
+                        />
+                    </TouchableOpacity>
+                </Header>
                 <FlatList    
                     style={styles.list}
                     data={this.state.todoArray}
@@ -62,21 +73,8 @@ export class MainScreen extends React.Component {
                             navigation={this.props.navigation}
                         />
                     )}
-                    keyExtractor = { (item, index) => index.toString() }
+                    keyExtractor = { (item) => item.key.toString() }
                 />
-                <View style={styles.addContainer}>
-                    <TouchableOpacity 
-                        style={styles.addButton}
-                        onPress={this.handleAddTodoPress}
-                    >
-                        <Icon 
-                            containerStyle={styles.addButton}
-                            size={45}
-                            color='#fff'                            
-                            name='add'                            
-                        />
-                    </TouchableOpacity>
-                </View>
             </View >
         );
     }
@@ -91,15 +89,11 @@ const styles = StyleSheet.create({
     list:{
         height: "60%"
     },
-    addContainer: {
-        height: "20%",
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     addButton:{
         borderRadius: 100,
         backgroundColor: 'lightgreen',
-        padding: 4,
+        width: 45,
+        height: 45,    
     },
 });
 

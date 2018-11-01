@@ -7,28 +7,30 @@ export const asyncStorageOperation = async (operation, itemToAdd, itemToRemove) 
     .then(array => {
         if(array !== null){
             array = JSON.parse(array);
+            
             if(operation === "read"){
                 return sortArray(array);
-            }else if(operation === "add" && itemToAdd){         
+            }
+            else if(operation === "add" && itemToAdd){         
                 array.push(itemToAdd);
-                AsyncStorage.removeItem("TodoList")
-                AsyncStorage.setItem("TodoList", JSON.stringify(array));
-            }else if(operation === "remove" && itemToRemove){
+                return AsyncStorage.setItem("TodoList", JSON.stringify(array));
+            }
+            else if(operation === "remove" && itemToRemove){
                 for(let i = 0; i < array.length; i++){
                     itemToRemove === array[i].key && array.splice(i, 1);
                 }
-                AsyncStorage.removeItem("TodoList")
-                AsyncStorage.setItem("TodoList", JSON.stringify(array));
-            }else return null;
+                return AsyncStorage.setItem("TodoList", JSON.stringify(array));
+            }
+            else return null;
         }else setFirstTime()
     })
-    .catch(faliureCallback)
+    .catch(failureCallback)
 }
 
 const setFirstTime = () => {
     AsyncStorage.setItem("TodoList", "[]");
 }
 
-export const faliureCallback = e => {
-    Alert.alert(`Error occured: ${e}`)
+export const failureCallback = e => {
+    Alert.alert(`Error occured: ${e.message}`)
 }

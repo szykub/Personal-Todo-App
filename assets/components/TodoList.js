@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Icon } from 'react-native-elements';
 
-import { asyncStorageOperation } from '../functions/AsyncStorageOperations';
+import { asyncStorageOperation, failureCallback } from '../functions/AsyncStorageOperations';
 
 export class TodoList extends React.Component{
     constructor(props){
@@ -14,16 +14,15 @@ export class TodoList extends React.Component{
         }
     }
 
-    deleteFromStorage = () => {
-        asyncStorageOperation("remove", 0, this.props.id);
-    }
-
     handleDelete = () => {
         if(this.state.done){
-            this.deleteFromStorage();
-            this.setState({
-                delete: true
-            });            
+            asyncStorageOperation("remove", 0, this.props.id)
+            .then(() => {
+                this.setState({
+                    delete: true
+                });            
+            })
+            .catch(failureCallback)
         }else{
             this.setState({
                 done: true
@@ -62,12 +61,16 @@ export class TodoList extends React.Component{
                     <Text style={styles.title}>{this.props.title}</Text>
                     <View style={styles.dateContainer}>
                         <Text style={styles.dateText}>Added: {this.props.added}</Text>
-                        {this.props.priority ? 
-                        <Icon 
-                            size={25}
-                            name="priority-high"
-                            iconStyle={styles.priorityIcon}
-                        /> : null}
+                        {
+                            this.props.priority ? 
+                            <Icon 
+                                size={25}
+                                name="priority-high"
+                                iconStyle={styles.priorityIcon}
+                            />
+                            : 
+                            null
+                         }
                         <Text style={styles.dateTextDeadline}>Deadline: {this.props.expires}</Text>
                     </View>
                 </TouchableOpacity>
@@ -92,7 +95,8 @@ const styles = StyleSheet.create({
     title:{
         color: '#27f',
         fontSize: 14,
-
+        textAlign: 'left',
+        flex: 0.4
     },
     icon:{
         backgroundColor: 'lightgreen',

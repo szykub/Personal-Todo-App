@@ -3,7 +3,7 @@ import { StyleSheet, View, KeyboardAvoidingView, TextInput, Text, TouchableOpaci
 import { Icon, CheckBox } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
-import { asyncStorageOperation, faliureCallback } from '../functions/AsyncStorageOperations';
+import { asyncStorageOperation, failureCallback } from '../functions/AsyncStorageOperations';
 
 export class AddScreen extends React.Component{
     static navigationOptions = {
@@ -83,10 +83,9 @@ export class AddScreen extends React.Component{
 
         asyncStorageOperation("add", newItem)
         .then(()=>{
-            this.props.navigation.state.params.onNavigateBack();
             this.props.navigation.goBack();
         })
-        .catch(faliureCallback)
+        .catch(failureCallback)
     }
 
     render(){
@@ -96,7 +95,7 @@ export class AddScreen extends React.Component{
                     <Text style={styles.text}>Title</Text>
                     <TextInput
                         style={styles.input}
-                        maxLength={50}
+                        maxLength={40}
                         onChangeText={this.handleTitle}
                         value={this.state.title}
                         placeholder={'Item title'}
@@ -109,7 +108,7 @@ export class AddScreen extends React.Component{
                         style={styles.input}
                         multiline={true}
                         numberOfLines={3}
-                        maxLength={200}
+                        maxLength={150}
                         onChangeText={this.handleDescription}
                         value={this.state.description}
                         placeholder={'Item description'}
