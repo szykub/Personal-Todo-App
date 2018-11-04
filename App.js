@@ -19,6 +19,7 @@ export class MainScreen extends React.Component {
         super(props);
 
         this.state = {
+            refresh: '',
             todoArray:[],
         }
     }   
@@ -41,13 +42,17 @@ export class MainScreen extends React.Component {
         this.props.navigation.navigate('Add');
     }  
 
+    handleItemRemove = () => {
+        this.getListAsync()
+    }
+
     render() {
         return (
             <View style={styles.container}>
                 <NavigationEvents 
                     onWillFocus={() => {this.getListAsync();}}
                 />
-                <Header>
+                <Header itemAmount={this.state.todoArray.length}>
                     <TouchableOpacity
                         onPress={this.handleAddTodoPress}
                         style={styles.addButton}
@@ -67,10 +72,12 @@ export class MainScreen extends React.Component {
                         <TodoList 
                             title={item.title} 
                             description={item.description} 
-                            added={item.created} expires={item.expires} 
+                            added={item.created}
+                            expires={item.expires} 
                             id={item.key} 
                             priority={item.highPriority} 
                             navigation={this.props.navigation}
+                            parentReRender={this.handleItemRemove}
                         />
                     )}
                     keyExtractor = { (item) => item.key.toString() }

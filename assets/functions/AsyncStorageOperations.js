@@ -1,4 +1,4 @@
-import { AsyncStorage, Alert} from 'react-native';
+import { AsyncStorage, Alert } from 'react-native';
 
 import { sortArray } from './Array';
 

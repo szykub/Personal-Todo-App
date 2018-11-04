@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, KeyboardAvoidingView, TextInput, Text, TouchableOpacity, AsyncStorage, Alert } from 'react-native';
+import { StyleSheet, View, KeyboardAvoidingView, TextInput, Text, TouchableOpacity } from 'react-native';
 import { Icon, CheckBox } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
