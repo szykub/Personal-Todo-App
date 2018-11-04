@@ -19,14 +19,9 @@ export class MainScreen extends React.Component {
         super(props);
 
         this.state = {
-            refresh: '',
             todoArray:[],
         }
     }   
-
-    componentDidMount(){
-        this.getListAsync()
-    }
 
     getListAsync = () => {
         asyncStorageOperation("read")

@@ -5,7 +5,7 @@ export class DetailsScreen extends React.Component{
     static navigationOptions = {
         title: "Item description",
         headerStyle:{
-            backgroundColor: 'tomato',            
+            backgroundColor: '#4FA3D2',            
         },
         headerTintColor: '#fff',
     };
@@ -15,11 +15,11 @@ export class DetailsScreen extends React.Component{
         let deadlineDate = new Date(expire).getTime();
         
         let output = parseInt((deadlineDate - today)/(24*3600*1000) + 1);
-        if(output === 1){
-            return `${output} day`
-        }else{
-            return `${output} days`
-        } 
+        if(!output) return `unlimited time`
+        return output === 1
+        ? `${output} day`
+        : `${output} days`
+        
     }    
 
     render(){
@@ -54,19 +54,19 @@ const styles = StyleSheet.create({
     },
     added:{
         textAlign: 'right',
-        color: '#28f',
+        color: '#4FA3D2',
         fontSize: 14,
         paddingTop: 20,
         paddingRight: 20,
     },
     days:{
-        color: 'tomato',
+        color: '#CE2424',
         fontSize: 18,
         textAlign: 'center',
         padding: 35,
     },
     roundContainer:{
-        backgroundColor: 'darkblue',
+        backgroundColor: '#4FA3D2',
         borderRadius: 100,
         width: 200,
         height: 200,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         marginRight: 'auto',
     },
     descriptionText:{
-        color: '#28f',
+        color: '#4FA3D2',
         textAlign: 'center',
         fontSize: 18,
     },
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
         padding: 15,
     },
     deadline:{
-        color: 'tomato',
+        color: '#CE2424',
         paddingBottom: 20,
         paddingRight: 20,
         textAlign: 'right',

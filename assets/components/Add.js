@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, KeyboardAvoidingView, TextInput, Text, TouchableOpacity } from 'react-native';
-import { Icon, CheckBox } from 'react-native-elements';
+import { Icon, ButtonGroup } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
 import { asyncStorageOperation, failureCallback } from '../functions/AsyncStorageOperations';
@@ -9,7 +9,7 @@ export class AddScreen extends React.Component{
     static navigationOptions = {
         title: "Add todo list item",
         headerStyle:{
-            backgroundColor: 'tomato',            
+            backgroundColor: '#4FA3D2',            
         },
         headerTintColor: '#fff',
     };
@@ -21,7 +21,7 @@ export class AddScreen extends React.Component{
             title: '',
             description: '',
             date: "No deadline",
-            highPriority: false,
+            priorityIndex: 0,
             isDateTimePickerVisible: false,
         }
     }
@@ -60,10 +60,10 @@ export class AddScreen extends React.Component{
         });
     }
 
-    handlePriority = () => {
-        this.setState(prevState => ({
-            highPriority: !prevState.highPriority
-        }))
+    handlePriority = (index) => {
+        this.setState({
+            priorityIndex: index
+        })
     }
 
     handleAdd = () => {
@@ -76,7 +76,7 @@ export class AddScreen extends React.Component{
 
             title: this.state.title,
             description: this.state.description,
-            highPriority: this.state.highPriority,
+            highPriority: this.state.highPriority === 1 ? "high" : "normal",
             created: newDate,
             expires: this.state.date,            
         }
@@ -89,6 +89,8 @@ export class AddScreen extends React.Component{
     }
 
     render(){
+        const buttons = ['Normal', 'High']
+
         return(
             <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
                 <View style={styles.nestedContainer}>
@@ -102,12 +104,12 @@ export class AddScreen extends React.Component{
                         underlineColorAndroid = "transparent"
                     />
                 </View>
-                <View style={styles.nestedContainer}>
+                <View style={styles.descriptionNestedContainer}>
                     <Text style={styles.text}>Description</Text>
                     <TextInput
-                        style={styles.input}
+                        style={styles.descriptionInput}
                         multiline={true}
-                        numberOfLines={3}
+                        numberOfLines={4}
                         maxLength={150}
                         onChangeText={this.handleDescription}
                         value={this.state.description}
@@ -116,12 +118,13 @@ export class AddScreen extends React.Component{
                     />
                 </View>
                 <View style={styles.nestedContainer}>
-                    <Text style={styles.text}>Deadline date</Text>
+                    <Text style={styles.text}>Deadline</Text>
                     <TouchableOpacity
                         onPress={this.showDateTimePicker}
+                        style={styles.dateInputContainer}
                     >
                         <TextInput
-                            style={styles.input}
+                            style={styles.dateInput}
                             value={this.state.date}
                             editable={false}
                             underlineColorAndroid = "transparent"
@@ -134,16 +137,15 @@ export class AddScreen extends React.Component{
                     />
                 </View>
                 <View style={styles.nestedContainer}>
-                    <CheckBox
-                        containerStyle={styles.checkbox}
-                        textStyle={styles.checkboxText}                        
-                        title='Is this a high priority?'
-                        checkedIcon='dot-circle-o'
-                        uncheckedIcon='circle-o'
-                        checked={this.state.highPriority}
+                    <Text style={styles.text}>Priority</Text>
+                    <ButtonGroup 
                         onPress={this.handlePriority}
+                        selectedIndex={this.state.priorityIndex}
+                        buttons={buttons}
+                        containerStyle={{height: 35, width: 200,}}
+                        selectedButtonStyle={{backgroundColor: "#4FA3D2"}}
+                        selectedTextStyle={{color: "#fff"}}
                     />
-
                 </View>
                 <TouchableOpacity
                     onPress={this.handleAdd}
@@ -163,26 +165,49 @@ export class AddScreen extends React.Component{
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        justifyContent: 'space-around',
         padding: 10,
         backgroundColor: '#fff'
     },
     nestedContainer:{
-        flex: 0.2,
-        justifyContent: 'center'
+        width: "100%",
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 5,
+        paddingBottom: 20,        
+    },
+    descriptionNestedContainer:{
+        width: "100%",
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        padding: 5,
+        paddingBottom: 20, 
+    },
+    descriptionInput:{
+        width: "100%",
+        borderBottomWidth: 2,
+        borderBottomColor: 'lightgray',
     },
     text: {
-        fontSize: 18,
+        fontSize: 16,
         color: '#28f',
-        marginTop: 10,
-        marginBottom: 10,
+    },
+    dateInputContainer:{
+        width: "70%",
     },
     input: {
-        borderBottomWidth: 1,
-        borderBottomColor: 'lightgray'
+        width: "70%",
+        borderBottomWidth: 2,
+        borderBottomColor: 'lightgray',
+    },
+    dateInput:{
+        width: "100%",
+        borderBottomWidth: 2,
+        borderBottomColor: 'lightgray',
     },
     icon:{
         backgroundColor: 'lightgreen',
+        padding: 5,
     },
     checkbox: {
         backgroundColor: 'transparent',
